@@ -1,15 +1,17 @@
 <?php
 
 define('LOGIN_FAIL', 4);
+define('USER_IS_FREE', 5);
 define('USER_IS_PREMIUM', 6);
 define('ERR_FILE_NO_EXIST', 114);
 define('ERR_REQUIRED_PREMIUM', 115);
 define('ERR_NOT_SUPPORT_TYPE', 116);
+define('DOWNLOAD_ISQUERYAGAIN', 'isqueryagain');
 define('DOWNLOAD_STATION_USER_AGENT', "Mozilla/4.0 (compatible; MSIE 6.1; Windows XP)");
 define('DOWNLOAD_URL', 'downloadurl'); 			// will contain the real download url
 
 class FreeWayFileHost {
-	private $url, $user, $pass, $hostInfo, $cookie = "/tmp/realdebrid.cookie";
+	private $url, $user, $pass, $hostInfo, $cookie = "/tmp/freeWay.cookie";
 	
 	public function __construct($url, $user, $pass, $hostInfo) {
 		$this->url = $url;
@@ -36,7 +38,26 @@ class FreeWayFileHost {
 		if($ClearCookie && file_exists($this->cookie))
 			unlink($this->cookie);
 				
-		return $res == "Valid login" ? USER_IS_PREMIUM : LOGIN_FAIL;
+		// validate that user can login with given credentials
+		$loginValid = false;
+		if ($res == "Valid login") {
+			$loginValid = true;
+		}
+
+		// if login is valid, find out if user is free or premium user
+		if ($loginValid) {
+			$testURL = "https://www.free-way.me/ajax/jd.php?id=4&user=".urlencode($this->user)."&pass=".urlencode($this->pass);
+			$testRes = (array) json_decode($this->Get($testURL,true));
+			if ($testRes["premium"] == "Free")
+			{
+				return USER_IS_FREE;
+			}
+			else {
+				return USER_IS_PREMIUM;
+			}
+		}
+
+		return LOGIN_FAIL;
 	}
 	
 	private function Get($url, $getCookie=false, $getDownloadUrl=false) {
