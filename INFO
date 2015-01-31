@@ -3,7 +3,7 @@
     "class": "FreeWayFileHost",
     "description": "free-way.me",
     "displayname": "Free-Way",
-    "hostprefix": "ul.to,uploaded.to,uploaded.net,share-online.biz,netload.in,depositfiles.com,bitshare.com,rapidgator.net,filepost.com,oboom.com,easybytez.com,datafile.com,uploadable.ch,turbobit.net",
+    "hostprefix": "ul.to,uploaded.to,uploaded.net,share-online.biz,netload.in,depositfiles.com,dfiles.eu,rapidgator.net,oboom.com,uploadable.ch,turbobit.net",
     "module": "free-way.php",
     "name": "Free-Way.me",
     "version": "0.1"
