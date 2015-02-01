@@ -10,8 +10,7 @@ Thanks for these two souces that helped developing this plugin:
 
 * Sensible error handling (if that's even possible with the provided API)
 * The `INFO` file does not contain all the hosts RealDebrid can handle: update to suit your needs
-* Bug: some hosts (e.g. Oboom) don't provide the correct filename yet. load.php is always returned as filename instead
-* Bug: sometimes the download fails and must be repeated (reason: unknown atm) 
+* Bugs: see github issues. 
 
 ## Testing
 

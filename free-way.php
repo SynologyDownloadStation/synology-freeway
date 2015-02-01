@@ -19,7 +19,7 @@ class FreeWayFileHost {
 	public function __construct($url, $user, $pass, $hostInfo) {
 		$this->url = $url;
 		$this->user = $user;
-		$this->pass = $pass;
+		$this->pass = sha1(strtolower($user) . html_entity_decode($pass));
 		$this->hostInfo = $hostInfo;
 	}
 	
@@ -31,7 +31,13 @@ class FreeWayFileHost {
 
 		$res = $this->Get("https://www.free-way.me/load.php?url=".urlencode($this->url)."&user=".$this->user."&pw=".$this->pass."&multiget=4", false, true);
 		$downloadUrl = (string)$res;
-		$name = $this->TryToGetFilename($downloadUrl);
+
+		// try to determine the correct filename
+		// limit range (CURLOPT_RANGE) to save time doesn't seem possible on netload, so we'll skip it for this host
+		if (!strstr($downloadUrl, "netload.in/"))
+		{
+			$name = $this->TryToGetFilename($downloadUrl);
+		}
 
 		return array(
 			    DOWNLOAD_URL => $downloadUrl,
@@ -47,12 +53,7 @@ class FreeWayFileHost {
 		curl_setopt ($ch, CURLOPT_NOBODY, TRUE);
 		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt ($ch, CURLOPT_BINARYTRANSFER, 0);	
-
-		// limit range to save time (doesn't seem possible on netload)
-		if (!strstr($downloadUrl, "netload.in/"))
-		{
-			curl_setopt ($ch, CURLOPT_RANGE, "0-100");
-		}
+		curl_setopt ($ch, CURLOPT_RANGE, "0-100");
 
 		// do request and save response
 		$response = curl_exec($ch);
@@ -97,6 +98,7 @@ class FreeWayFileHost {
 	}
 
 	public function Verify($ClearCookie) {
+
 		$loginURL = "https://www.free-way.me/ajax/jd.php?id=1&user=".urlencode($this->user)."&pass=".urlencode($this->pass);
 		$res = $this->Get($loginURL,true);
 	
